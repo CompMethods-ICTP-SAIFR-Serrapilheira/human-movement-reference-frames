@@ -1,3 +1,4 @@
+# ------------------------------------------------------------------------------
 # Verification of the referential used by motor control in reaching movements
 #
 # Description: this code will process the range motion data, filtering the data
@@ -9,6 +10,8 @@
 #
 # Author: Mateus Souza Silva
 # Date: 18/08/2022
+# ------------------------------------------------------------------------------
+
 
 # Necessary packages -----------------------------------------------------------
 
@@ -16,12 +19,12 @@
 library(stringi)
 library(signal)
 
-# Setting filter parameters-----------------------------------------------------
+# Configuring -------------------------------------------------------------------
 
 low_pass <- 10                                                                  # Low pass filter frequency
 order <- 4                                                                      # Low pass filter order
-
-# Configuring-------------------------------------------------------------------
+R_markers <- c("RUSP", "RHME")                                                  # Markers for right-arm movements
+L_markers <- c("LUSP", "LHME")                                                  # Markers for left-arm movements
 
 data_path <- list.files(path = "data/raw/csv",                                  # List all .csv data paths
                          pattern = "csv$",
@@ -30,38 +33,43 @@ data_path <- list.files(path = "data/raw/csv",                                  
 
 data_names <- gsub(".csv", "", basename(data_path), fixed = TRUE)               # List all data names
 
-data_laterality <- stri_sub(data_names, -3, -3)
+data_laterality <- stri_sub(data_names, -3, -3)                                 # Checking the laterality of the movement ("R" = right, "L" = left)
 
 number_data <- length(data_names)
 
-R_markers <- c("RUSP", "RHME")
-L_markers <- c("LUSP", "LHME")
+
+# Loop that goes through all the files -----------------------------------------
 
 for(i_data in seq(1, number_data)){
 
-  if(data_laterality[i_data] == "R"){
+  # Reading file and creating the vectors --------------------------------------
+
+  data <- read.csv(data_path[i_data])
+
+  if(data_laterality[i_data] == "R"){                                           # Selecting the marker corresponding to the laterality of i_data
     markers <- R_markers
   }
   else{
     markers <- L_markers
   }
 
-  data <- read.csv(data_path[i_data])
+  time <- data[data$marker == markers[1], 2]                                    # Time column
+  inert <- data[data$marker == markers[1], 3 : 5]                               # Data of movement with inertial referential (laboratory)
+  ref_non_inert <- data[data$marker == markers[2], 3 : 5]                       # Data of movement of the non-inertial referential
 
-  freq_sample <- 1/(data$t[2] - data$t[1])
+  freq_sample <- 1/(data$t[2] - data$t[1])                                      # Calculating the data capture frequency
 
-  time <- data[data$marker == markers[1], 2]
-  inert <- data[data$marker == markers[1], 3 : 5]
-  ref_non_inert <- data[data$marker == markers[2], 3 : 5]
+  # Filtration process ---------------------------------------------------------
 
-  bf <- butter(order, 1/low_pass)
-
+  bf <- butter(order, 1/low_pass)                                               # Low-pass filter process
   for(ax in seq(1, 3)){
     inert[, ax] <- filtfilt(bf, inert[, ax])
     ref_non_inert[, ax] <- filtfilt(bf, ref_non_inert[, ax])
   }
 
-  non_inert <- inert - ref_non_inert
+  non_inert <- inert - ref_non_inert                                            # Data of movement with non-inertial referential
+
+  # Calculating velocities and filling data frames -----------------------------
 
   inert$vx <- c(diff(inert$x)*freq_sample, 0)
   inert$vy <- c(diff(inert$y)*freq_sample, 0)
@@ -75,12 +83,13 @@ for(i_data in seq(1, number_data)){
   non_inert$t <- time
   non_inert <- non_inert[-c(length(non_inert$x)),]
 
-  name_file <- stri_sub(data_names[i_data], 1, 10)
+  # Saving Files ---------------------------------------------------------------
 
-  dir_inert <- "./data/processed/filtered_data/inertial/"
+  name_file <- stri_sub(data_names[i_data], 1, 10)                              # Setting the name of the filtered file
+  dir_inert <- "./data/processed/filtered_data/inertial/"                       # Directories where the files will be saved
   dir_non_inert <- "./data/processed/filtered_data/non_inertial/"
 
-  if (!dir.exists(dir_inert)) {dir.create(dir_inert, recursive = TRUE)}
+  if (!dir.exists(dir_inert)) {dir.create(dir_inert, recursive = TRUE)}         # Creating the directories
   if (!dir.exists(dir_non_inert)) {dir.create(dir_non_inert, recursive = TRUE)}
 
   write.csv(inert, paste(dir_inert, name_file, "_inertial.csv", sep=""), row.names = FALSE)
