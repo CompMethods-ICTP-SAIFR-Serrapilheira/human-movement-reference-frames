@@ -2,8 +2,8 @@
 # Verification of the referential used by motor control in reaching movements
 #
 # Description: this code will process the range motion data, filtering the data
-# with a low-pass filter and calculating the trajectories and
-# velocities of the markers
+#   with a low-pass filter and calculating the trajectories and
+#   velocities of the markers
 #
 # Database: The database used in this study is available at
 #   https://doi.org/10.1016/j.dib.2018.05.088
@@ -19,7 +19,7 @@
 library(stringi)
 library(signal)
 
-# Configuring -------------------------------------------------------------------
+# Configuring ------------------------------------------------------------------
 
 low_pass <- 10                                                                  # Low pass filter frequency
 order <- 4                                                                      # Low pass filter order
@@ -92,7 +92,9 @@ for(i_data in seq(1, number_data)){
   if (!dir.exists(dir_inert)) {dir.create(dir_inert, recursive = TRUE)}         # Creating the directories
   if (!dir.exists(dir_non_inert)) {dir.create(dir_non_inert, recursive = TRUE)}
 
-  write.csv(inert, paste(dir_inert, name_file, "_inertial.csv", sep=""), row.names = FALSE)
-  write.csv(non_inert, paste(dir_non_inert, name_file, "_non_inertial.csv", sep=""), row.names = FALSE)
+  write.csv(inert, paste(dir_inert, name_file, "_inertial.csv",
+                         sep=""), row.names = FALSE)
+  write.csv(non_inert, paste(dir_non_inert, name_file, "_non_inertial.csv",
+                             sep=""), row.names = FALSE)
 }
 
