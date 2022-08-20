@@ -23,8 +23,8 @@ library(signal)
 
 low_pass <- 10                                                                  # Low pass filter frequency
 order <- 4                                                                      # Low pass filter order
-R_markers <- c("RUSP", "RHME")                                                  # Markers for right-arm movements
-L_markers <- c("LUSP", "LHME")                                                  # Markers for left-arm movements
+R_markers <- c("RHMC2", "RUSP")                                                 # Markers for right-arm movements
+L_markers <- c("LHMC2", "LUSP")                                                 # Markers for left-arm movements
 
 data_path <- list.files(path = "data/raw/csv",                                  # List all .csv data paths
                          pattern = "csv$",
@@ -75,13 +75,13 @@ for(i_data in seq(1, number_data)){
   inert$vy <- c(diff(inert$y)*freq_sample, 0)
   inert$vz <- c(diff(inert$z)*freq_sample, 0)
   inert$t <- time
-  inert <- inert[-c(length(inert$x)),]
+  inert <- inert[freq_sample:(length(inert$x)-freq_sample),]
 
   non_inert$vx <- c(diff(non_inert$x)*freq_sample, 0)
   non_inert$vy <- c(diff(non_inert$y)*freq_sample, 0)
   non_inert$vz <- c(diff(non_inert$z)*freq_sample, 0)
   non_inert$t <- time
-  non_inert <- non_inert[-c(length(non_inert$x)),]
+  non_inert <- non_inert[freq_sample:(length(non_inert$x)-freq_sample),]
 
   # Saving Files ---------------------------------------------------------------
 
@@ -92,9 +92,8 @@ for(i_data in seq(1, number_data)){
   if (!dir.exists(dir_inert)) {dir.create(dir_inert, recursive = TRUE)}         # Creating the directories
   if (!dir.exists(dir_non_inert)) {dir.create(dir_non_inert, recursive = TRUE)}
 
-  write.csv(inert, paste(dir_inert, name_file, "_inertial.csv",
+  write.csv(inert, paste(dir_inert, name_file, "_inertial.csv",                 # Writing the files
                          sep=""), row.names = FALSE)
   write.csv(non_inert, paste(dir_non_inert, name_file, "_non_inertial.csv",
                              sep=""), row.names = FALSE)
 }
-
