@@ -3,12 +3,11 @@
 % Author: Mateus Souza Silva
 % Date: 18/08/2022
 
-
 folder = strcat(cd, filesep, 'data', filesep, 'raw', filesep, 'c3d', filesep);             % Folder with the database
 files_list = dir(fullfile(folder, '**/*.c3d*'));                           % Lists all c3d files in the folder
 number_files = length(files_list); 
 
-btk_markers = ["RHME"; "LHME"; "RUSP"; "LUSP"];                            % Selected markers, if [] it will take all 
+btk_markers = ["RHMC2"; "RUSP"; "LHMC2"; "LUSP"];                          % Selected markers, if [] it will take all 
 
 for file = 1 : number_files                                                % Loop for each file of the database
     file_path = [files_list(file).folder filesep files_list(file).name];
