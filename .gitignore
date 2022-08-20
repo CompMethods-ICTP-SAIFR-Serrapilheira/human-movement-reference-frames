@@ -1,2 +1,5 @@
-*.c3d
 .Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+data/raw/c3d/*
