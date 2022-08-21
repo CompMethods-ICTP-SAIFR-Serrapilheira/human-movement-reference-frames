@@ -14,7 +14,12 @@
 # Date: 18/08/2022
 # ------------------------------------------------------------------------------
 
+
+# Necessary packages -----------------------------------------------------------
+
 library(lme4)
+
+# Performing the statistical analysis ------------------------------------------
 
 indices_MED <- read.csv("./output/indices_MED.csv")                             # Reading output table
 
