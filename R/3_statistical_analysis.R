@@ -19,17 +19,30 @@
 
 library(lme4)
 
-# Performing the statistical analysis ------------------------------------------
+# Performing the statistical analysis for W-------------------------------------
 
 indices_MED <- read.csv("./output/indices_MED.csv")                             # Reading output table
 
-model <- lme4::lmer(W_elements ~ referential_elements + (1|ind_output),         # Making the linear model with mixed effects (Fixed effect being
-                    indices_MED)                                                # the referential and random effect being the diffence between individuals)
+model_W <- lme4::lmer(W_elements ~ referential_elements + (1|ind_output),       # Making the linear model with mixed effects (Fixed effect being
+                    indices_MED)                                                # the referential and random effect being the difference between individuals)
 
-null_model <- lme4::lmer(W_elements ~  1  + (1|ind_output), indices_MED)        # Making the linear model without the fixed effect (null-model)
+null_model_W <- lme4::lmer(W_elements ~  1  + (1|ind_output), indices_MED)      # Making the linear model without the fixed effect (null-model)
 
-summary(model)
+summary(model_W)
 
-anova(model, null_model)                                                        # Model selection to verify which model better explains the data
+anova(model_W, null_model_W)                                                    # Model selection to verify which model better explains the data
 
-(model)
+(model_W)
+
+# For R^2 ----------------------------------------------------------------------
+
+model_R2 <- lme4::lmer(R2_elements ~ referential_elements + (1|ind_output),     # Making the linear model with mixed effects (Fixed effect being
+                      indices_MED)                                              # the referential and random effect being the difference between individuals)
+
+null_model_R2 <- lme4::lmer(R2_elements ~  1  + (1|ind_output), indices_MED)    # Making the linear model without the fixed effect (null-model)
+
+summary(model_R2)
+
+anova(model_R2, null_model_R2)                                                  # Model selection to verify which model better explains the data
+
+(model_R2)
