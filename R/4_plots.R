@@ -14,6 +14,7 @@
 
 # Necessary packages -----------------------------------------------------------
 
+library(dplyr)
 library(ggplot2)
 
 # Reading necessary tables ---------- ------------------------------------------
